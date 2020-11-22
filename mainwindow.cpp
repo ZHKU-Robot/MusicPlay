@@ -3,18 +3,14 @@
 #include <QDebug>
 
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),ui
+(new Ui::MainWindow)
 {
     ui->setupUi(this);
     init();
     connect(ui->btnstar,&QPushButton::clicked,this,&MainWindow::ButtonConvert);
     connect(ui->btnnext,&QPushButton::clicked,this,&MainWindow::MusicNext);
     connect(ui->btnlast,&QPushButton::clicked,playlist,&QMediaPlaylist::previous);
-
-
-
 }
 
 

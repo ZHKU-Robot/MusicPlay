@@ -1,14 +1,27 @@
 <RCC>
     <qresource prefix="/buttonicon">
-        <file>MusicButtonIcon/background.jpg</file>
-        <file>MusicButtonIcon/song.svg</file>
-        <file>MusicButtonIcon/video-player-1.svg</file>
-        <file>MusicButtonIcon/horn.png</file>
-        <file>MusicButtonIcon/greenlast.svg</file>
-        <file>MusicButtonIcon/greennext.svg</file>
-        <file>MusicButtonIcon/greenplay.svg</file>
-        <file>MusicButtonIcon/greentime.svg</file>
-        <file>MusicButtonIcon/greenhorn.svg</file>
-        <file>MusicButtonIcon/暂停.svg</file>
+    <file>MusicButtonIcon/background.jpg</file>
+    <file>MusicButtonIcon/background.png</file>
+    <file>MusicButtonIcon/greenhorn.svg</file>
+    <file>MusicButtonIcon/greenlast.svg</file>
+    <file>MusicButtonIcon/greennext.svg</file>
+    <file>MusicButtonIcon/greenplay.svg</file>
+    <file>MusicButtonIcon/greentime.svg</file>
+    <file>MusicButtonIcon/history.svg</file>
+    <file>MusicButtonIcon/horn.png</file>
+    <file>MusicButtonIcon/last.svg</file>
+    <file>MusicButtonIcon/media.svg</file>
+    <file>MusicButtonIcon/music icon.svg</file>
+    <file>MusicButtonIcon/Music.svg</file>
+    <file>MusicButtonIcon/next.svg</file>
+    <file>MusicButtonIcon/pause.svg</file>
+    <file>MusicButtonIcon/song.svg</file>
+    <file>MusicButtonIcon/stop.svg</file>
+    <file>MusicButtonIcon/video-player-1.svg</file>
+    <file>MusicButtonIcon/volume-full.svg</file>
+    <file>MusicButtonIcon/volume-half.svg</file>
+    <file>MusicButtonIcon/volume-off.svg</file>
+    <file>MusicButtonIcon/_pause .svg</file>
+    
     </qresource>
 </RCC>
