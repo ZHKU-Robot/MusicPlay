@@ -23,12 +23,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.end=0
         self.tempColor = 0
         self.toolBarWidth=self.toolBar.size().width()
-        # self.timer.timeout.connect(self.styleChange)
-        # self.timer.start(11000)
-        # self.timer.setInterval(30)
+        self.timer.timeout.connect(self.styleChange)
+        self.timer.start(11000)
+        self.timer.setInterval(30)
     def qMediaPlayerInit(self):
         self.myMediaPlayer=QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        self.myMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'D:\steam\steamapps\workshop\content\431960\1.mp4')))
+        self.myMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'插画.mp4')))
         self.videoWidget = QVideoWidget(self)
         self.horizontalLayout_2.addWidget(self.videoWidget)
         self.myMediaPlayer.setVideoOutput(self.videoWidget)
