@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>979</width>
+    <width>914</width>
     <height>665</height>
    </rect>
   </property>
@@ -520,22 +520,5 @@ margin: 0px;</string>
  <resources>
   <include location="res.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>actionPlayList</sender>
-   <signal>triggered()</signal>
-   <receiver>MusicPlayerMainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>489</x>
-     <y>332</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

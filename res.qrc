@@ -24,6 +24,7 @@
     <file>MusicButtonIcon/volume-half.svg</file>
     <file>MusicButtonIcon/volume-off.svg</file>
     <file>MusicButtonIcon/_pause .svg</file>
+
     
     </qresource>
 </RCC>
