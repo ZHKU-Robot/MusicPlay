@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/buttonicon">
     <file>MusicButtonIcon/13W58PICnPsgaZExEGHtM_PIC2018.jpg</file>
+    <file>MusicButtonIcon/add.svg</file>
     <file>MusicButtonIcon/background.jpg</file>
     <file>MusicButtonIcon/background.png</file>
     <file>MusicButtonIcon/greenhorn.svg</file>
@@ -16,6 +17,7 @@
     <file>MusicButtonIcon/Music.svg</file>
     <file>MusicButtonIcon/next.svg</file>
     <file>MusicButtonIcon/pause.svg</file>
+    <file>MusicButtonIcon/playall.svg</file>
     <file>MusicButtonIcon/robot.svg</file>
     <file>MusicButtonIcon/song.svg</file>
     <file>MusicButtonIcon/stop.svg</file>
@@ -24,7 +26,6 @@
     <file>MusicButtonIcon/volume-half.svg</file>
     <file>MusicButtonIcon/volume-off.svg</file>
     <file>MusicButtonIcon/_pause .svg</file>
-
     
     </qresource>
 </RCC>

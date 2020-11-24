@@ -68,7 +68,8 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                     self.tableWidget.setItem(i, 5, QTableWidgetItem(file))
 
             f.write(str(musicCache+eval(musicContent)))
-            self.label_2.setText('共{}首'.format(str(musicCache+eval(musicContent))))
+            if self.fileDialog.selectedFiles()!=[]:
+                self.label_2.setText('共{}首'.format(len(musicCache+eval(musicContent))))
     def musicLoaded(self):
         if not os.path.exists('musicContent.cache'):
             with open('musicContent.cache','w+') as cache:

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>983</width>
+    <width>982</width>
     <height>668</height>
    </rect>
   </property>
@@ -76,8 +76,39 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+background-color: rgb(225, 0, 21);
+color: rgb(244, 246, 255);
+border-width:10px;
+border-height:5px;
+}
+
+
+QPushButton::pressed{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa);};</string>
+       </property>
        <property name="text">
         <string>播放全部</string>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/buttonicon/MusicButtonIcon/playall.svg</normaloff>:/buttonicon/MusicButtonIcon/playall.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -96,8 +127,25 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+
+	color: rgb(17, 108, 255);
+}
+
+
+QPushButton::pressed{
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa);};</string>
+       </property>
        <property name="text">
         <string>添加音乐</string>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/buttonicon/MusicButtonIcon/add.svg</normaloff>:/buttonicon/MusicButtonIcon/add.svg</iconset>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

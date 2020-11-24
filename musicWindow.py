@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MusicWindow(object):
     def setupUi(self, MusicWindow):
         MusicWindow.setObjectName("MusicWindow")
-        MusicWindow.resize(983, 668)
+        MusicWindow.resize(982, 668)
         self.verticalLayout = QtWidgets.QVBoxLayout(MusicWindow)
         self.verticalLayout.setObjectName("verticalLayout")
         self.widget = QtWidgets.QWidget(MusicWindow)
@@ -46,11 +46,42 @@ class Ui_MusicWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButton = QtWidgets.QPushButton(MusicWindow)
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(12)
+        self.pushButton.setFont(font)
+        self.pushButton.setStyleSheet("QPushButton {\n"
+"background-color: rgb(225, 0, 21);\n"
+"color: rgb(244, 246, 255);\n"
+"border-width:10px;\n"
+"border-height:5px;\n"
+"}\n"
+"\n"
+"\n"
+"QPushButton::pressed{\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa);};")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/buttonicon/MusicButtonIcon/playall.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton.setIcon(icon)
+        self.pushButton.setIconSize(QtCore.QSize(20, 20))
+        self.pushButton.setFlat(False)
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.pushButton_2 = QtWidgets.QPushButton(MusicWindow)
+        self.pushButton_2.setStyleSheet("QPushButton {\n"
+"\n"
+"    color: rgb(17, 108, 255);\n"
+"}\n"
+"\n"
+"\n"
+"QPushButton::pressed{\n"
+"    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #dadbde, stop: 1 #f6f7fa);};")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/buttonicon/MusicButtonIcon/add.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_2.setIcon(icon1)
+        self.pushButton_2.setFlat(True)
         self.pushButton_2.setObjectName("pushButton_2")
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.verticalLayout.addLayout(self.horizontalLayout)
