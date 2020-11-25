@@ -29,14 +29,19 @@ class MusicWindow(QWidget, Ui_MusicWindow):
     def attrInit(self,):
 
         self.fileDialog=QFileDialog(self,'选择你的音乐..','.',"music (*.mp3 *.wav *.flac)")
+
         self.fileDialog.finished.connect(self.musicReloaded)
         self.fileDialog.setModal(1)
         self.fileDialog.setViewMode(QFileDialog.Detail)
         #是因为此Widget的父控件上又添加了其他Widget，覆盖在了按钮上，因此无法点击。
         # self.pushButton.raise_()
         # self.pushButton_2.raise_()
-        self.pushButton_2.clicked.connect(self.fileDialog.show)
+        self.pushButton_2.clicked.connect(self.getMusicPaths)
         self.musicLoaded()
+    def getMusicPaths(self):
+        self.musicPaths=list(self.fileDialog.getOpenFileNames(self, '选择你的音乐..', '.', "music (*.mp3 *.wav *.flac)"))[:-1][0]
+        print(self.musicPaths)
+        self.musicReloaded()
     def lyricsWindowInit(self,songPath):
         s=eyed3.load(songPath)
         ly=s.tag.lyrics
@@ -55,16 +60,16 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         musicCache = []
         count=0
         curRow=self.musicTable.rowCount()
-        for i, file in enumerate(self.fileDialog.selectedFiles()):
+        for i, file in enumerate(self.musicPaths):
             if file not in eval(musicContent):
                 count+=1
         self.musicTable.setRowCount(count + self.musicTable.rowCount())
 
         with open('musicContent.cache', 'w+',encoding='utf8') as f:
-            for i, file in enumerate(self.fileDialog.selectedFiles()):
+            for i, file in enumerate(self.musicPaths):
                 if file not in eval(musicContent):
                     musicCache.append(file)
-
+                    print(file)
                     #暂不支持flac网易云格式
                     mp3 = eyed3.load(file)
                     i+=curRow
