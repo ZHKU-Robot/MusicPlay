@@ -86,8 +86,6 @@
         <string notr="true">QPushButton {
 background-color: rgb(225, 0, 21);
 color: rgb(244, 246, 255);
-border-width:10px;
-border-height:5px;
 }
 
 

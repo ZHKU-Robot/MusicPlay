@@ -53,8 +53,6 @@ class Ui_MusicWindow(object):
         self.pushButton.setStyleSheet("QPushButton {\n"
 "background-color: rgb(225, 0, 21);\n"
 "color: rgb(244, 246, 255);\n"
-"border-width:10px;\n"
-"border-height:5px;\n"
 "}\n"
 "\n"
 "\n"
