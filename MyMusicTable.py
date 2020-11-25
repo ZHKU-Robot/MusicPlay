@@ -38,6 +38,8 @@ class MyMusicTable(QTableWidget):
             self.path = self.item(self.lastRow, self.columnCount() - 1).text()
             self.musicWindow.musicMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
             self.musicWindow.musicMediaPlayer.play()
+            #加载歌词
+            # self.pass
             if self.musicWindow.musicMediaPlayer.state()==1:
                 self.musicWindow.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/pause.svg"))
             else:

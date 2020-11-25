@@ -36,8 +36,8 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.fileDialog.setModal(1)
         self.fileDialog.setViewMode(QFileDialog.Detail)
         #是因为此Widget的父控件上又添加了其他Widget，覆盖在了按钮上，因此无法点击。
-        self.pushButton.raise_()
-        self.pushButton_2.raise_()
+        # self.pushButton.raise_()
+        # self.pushButton_2.raise_()
         self.pushButton_2.clicked.connect(self.fileDialog.show)
 
 

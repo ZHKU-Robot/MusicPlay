@@ -96,7 +96,7 @@ QPushButton::pressed{
         <string>播放全部</string>
        </property>
        <property name="icon">
-        <iconset resource="res.qrc">
+        <iconset>
          <normaloff>:/buttonicon/MusicButtonIcon/playall.svg</normaloff>:/buttonicon/MusicButtonIcon/playall.svg</iconset>
        </property>
        <property name="iconSize">
@@ -139,7 +139,7 @@ QPushButton::pressed{
         <string>添加音乐</string>
        </property>
        <property name="icon">
-        <iconset resource="res.qrc">
+        <iconset>
          <normaloff>:/buttonicon/MusicButtonIcon/add.svg</normaloff>:/buttonicon/MusicButtonIcon/add.svg</iconset>
        </property>
        <property name="flat">
