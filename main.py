@@ -3,8 +3,8 @@ import sys
 import time
 import random
 import eyed3
-from PyQt5 import sip
-from PyQt5.QtCore import QTimer, QUrl
+from PyQt5.QtCore import QTimer, QUrl, Qt
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QTableWidgetItem, QTableView, QTableWidget, \
@@ -19,17 +19,18 @@ from MusicPlayerMainWindow import Ui_MusicPlayerMainWindow
 import os
 class MusicTable(QWidget, Ui_MusicTable):
     def __init__(self, *args, **kwargs):
-        super(QWidget, self).__init__(*args, **kwargs)
-        self.setupUi(self)
-
+        super(MusicTable, self).__init__(*args, **kwargs)
+        print(self.parent().parent())
 
 class MusicWindow(QWidget, Ui_MusicWindow):
     def __init__(self, *args, **kwargs):
-        super(QWidget, self).__init__(*args, **kwargs)
+        super(MusicWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.attrInit()
-    def attrInit(self):
-        self.musicTable=MusicTable()
+    def attrInit(self,):
+
+        self.musicTable=MusicTable(parent=self)
+        self.musicTable.setupUi(self.musicTable)
         self.tableWidget=self.musicTable.tableWidget
         self.horizontalLayout_2.addWidget(self.tableWidget)
         self.fileDialog=QFileDialog(self,'选择你的音乐..','.',"music (*.mp3 *.wav *.flav)")
@@ -100,22 +101,21 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
-        self.musicWindowInit()
         self.qSliderInit()
         self.qMediaPlayerInit()
+        self.musicWindowInit()
         self.attrInit()
         self.toolButtonInit()
     def musicWindowInit(self):
-        self.musicWindow=MusicWindow()
+        self.musicWindow=MusicWindow(parent=self)
+        self.musicWindow.setParent(self)
         self.mainBodyLayout.addWidget(self.musicWindow)
-
-
 
     def switchFace(self,index):
         if index == 0:
-            self.musicMediaPlayer.pause()
+            self.videoMediaPlayer.pause()
         elif index == 1:
-            self.musicMediaPlayer.play()
+            self.videoMediaPlayer.play()
         for face in list(self.face.keys()):
             if face!=index:
                 self.face[face].setVisible(0)
@@ -126,13 +126,28 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.actionBtnMV.triggered.connect(lambda :self.switchFace(1))
     def attrInit(self):
         self.face={0:self.musicWindow,1:self.videoWidget}
+
+    def myPlayerChanged(self):
+        #如果等于1 即正在播放
+        if self.musicMediaPlayer.state()==1:
+            self.musicMediaPlayer.pause()
+            self.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/_pause .svg"))
+
+        else:
+            #记录上一次听过的音乐并播放
+            self.musicMediaPlayer.play()
+            self.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/pause.svg"))
     def qMediaPlayerInit(self):
+        # 音频流播放器初始化
         self.musicMediaPlayer=QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        # self.musicMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'mv/mv.mp4')))
+        self.videoMediaPlayer = QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.videoMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'mv/mv.mp4')))
         self.videoWidget = QVideoWidget()
         self.mainBodyLayout.addWidget(self.videoWidget)
         self.videoWidget.setVisible(0)
-        self.musicMediaPlayer.setVideoOutput(self.videoWidget)
+        self.videoMediaPlayer.setVideoOutput(self.videoWidget)
+        #音频按钮绑定
+        self.btnstar.clicked.connect(self.myPlayerChanged)
     def qSliderInit(self):
         self.styleTimer=QTimer()
         self.temp = 0
@@ -158,9 +173,7 @@ height:40px;
     def styleChange(self):
         #设置中间值,作为一个移动的东东,这里是temp
         #计算比例
-
         #接着我们从0开始
-
         if self.end == 0 :
             if int(self.temp)<self.toolBarWidth:
                 self.temp+=self.toolBarWidth/100
@@ -181,10 +194,9 @@ height:40px;
         self.widget_3.setStyleSheet("""
         background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, {}), stop:{} rgba(255, 0, 0, {}),stop:1 rgba(255, 0, 0, {}));
         """.format(indexProportion,indexProportion,indexProportion,indexProportion))
-
-
-
-
+        self.musicWindow.setStyleSheet("""
+        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, 0), stop:{} rgba(255, 0, 0, 50),stop:1 rgba(255, 0, 0, 50));
+        """.format(indexProportion,indexProportion,indexProportion,indexProportion))
 
 
     def closeEvent(self, a0) -> None:
@@ -196,5 +208,8 @@ if __name__ == '__main__':  # 程序的入口
     app = QApplication(sys.argv)
     win = MainWindow()
     win.setWindowTitle('No Tension')
+
+    win.setGeometry(111,222,1000,600)
+    # win.setWindowFlags(Qt.CustomizeWindowHint)
     win.show()
     sys.exit(app.exec_())
