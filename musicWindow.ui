@@ -96,7 +96,7 @@ QPushButton::pressed{
         <string>播放全部</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/buttonicon/MusicButtonIcon/playall.svg</normaloff>:/buttonicon/MusicButtonIcon/playall.svg</iconset>
        </property>
        <property name="iconSize">
@@ -139,7 +139,7 @@ QPushButton::pressed{
         <string>添加音乐</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/buttonicon/MusicButtonIcon/add.svg</normaloff>:/buttonicon/MusicButtonIcon/add.svg</iconset>
        </property>
        <property name="flat">
@@ -150,10 +150,70 @@ QPushButton::pressed{
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
+     <item>
+      <widget class="MyMusicTable" name="musicTable">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="gridStyle">
+        <enum>Qt::DashDotDotLine</enum>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>歌名</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>歌手</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>专辑</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>时长</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>大小</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>路径</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="lyricsWindow"/>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyMusicTable</class>
+   <extends>QTableWidget</extends>
+   <header>MyMusicTable</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>

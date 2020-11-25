@@ -11,8 +11,8 @@ class MyMusicTable(QTableWidget):
         self.setMouseTracking(True)
         self.curRow=-1
         self.play=0
-        self.path=''
-        self.musicWindow=self.parent().parent().parent()
+        self.songPath= ''
+        self.mainWindow=self.parent().parent()
     def mouseMoveEvent(self, e) -> None:
         self.globalPos=e.pos()
         self.lastRow=self.rowAt(self.globalPos.y())
@@ -35,13 +35,13 @@ class MyMusicTable(QTableWidget):
             self.curRow=self.lastRow
     def mouseDoubleClickEvent(self, e) -> None:
         if self.lastRow!=-1:
-            self.path = self.item(self.lastRow, self.columnCount() - 1).text()
-            self.musicWindow.musicMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.path)))
-            self.musicWindow.musicMediaPlayer.play()
+            self.songPath = self.item(self.lastRow, self.columnCount() - 1).text()
+            self.mainWindow.musicMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.songPath)))
+            self.mainWindow.musicMediaPlayer.play()
             #加载歌词
-            # self.pass
-            if self.musicWindow.musicMediaPlayer.state()==1:
-                self.musicWindow.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/pause.svg"))
+            self.mainWindow.musicWindow.lyricsWindowInit(self.songPath)
+            if self.mainWindow.musicMediaPlayer.state()==1:
+                self.mainWindow.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/pause.svg"))
             else:
                 pass
 

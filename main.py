@@ -15,11 +15,11 @@ from MusicTable import Ui_MusicTable
 from musicWindow import Ui_MusicWindow
 from MusicPlayerMainWindow import Ui_MusicPlayerMainWindow
 
-
+from songwordsWindow import Ui_songwordsWindow
 import os
-class MusicTable(QWidget, Ui_MusicTable):
-    def __init__(self, *args, **kwargs):
-        super(MusicTable, self).__init__(*args, **kwargs)
+
+
+
 
 class MusicWindow(QWidget, Ui_MusicWindow):
     def __init__(self, *args, **kwargs):
@@ -27,11 +27,8 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.setupUi(self)
         self.attrInit()
     def attrInit(self,):
-        self.musicTable=MusicTable(parent=self)
-        self.musicTable.setupUi(self.musicTable)
-        self.tableWidget=self.musicTable.tableWidget
-        self.horizontalLayout_2.addWidget(self.tableWidget)
-        self.fileDialog=QFileDialog(self,'选择你的音乐..','.',"music (*.mp3 *.wav *.flav)")
+
+        self.fileDialog=QFileDialog(self,'选择你的音乐..','.',"music (*.mp3 *.wav *.flac)")
         self.fileDialog.finished.connect(self.musicReloaded)
         self.fileDialog.setModal(1)
         self.fileDialog.setViewMode(QFileDialog.Detail)
@@ -39,36 +36,44 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         # self.pushButton.raise_()
         # self.pushButton_2.raise_()
         self.pushButton_2.clicked.connect(self.fileDialog.show)
-
-
-        self.musicBindInit()
         self.musicLoaded()
+    def lyricsWindowInit(self,songPath):
+        s=eyed3.load(songPath)
+        ly=s.tag.lyrics
+        print(dir(ly))
+        print(ly)
+        for l in dir(ly):
+            try:
+                eval('ly.'+l)()
+            except Exception as e:
+                print(e)
+        #获取歌词
 
-    def musicBindInit(self):
-        pass
     def musicReloaded(self):
         with open('musicContent.cache',encoding='utf8') as cache:
             musicContent=cache.read()
         musicCache = []
         count=0
-        curRow=self.tableWidget.rowCount()
+        curRow=self.musicTable.rowCount()
         for i, file in enumerate(self.fileDialog.selectedFiles()):
             if file not in eval(musicContent):
                 count+=1
-        self.tableWidget.setRowCount(count + self.tableWidget.rowCount())
+        self.musicTable.setRowCount(count + self.musicTable.rowCount())
 
         with open('musicContent.cache', 'w+',encoding='utf8') as f:
             for i, file in enumerate(self.fileDialog.selectedFiles()):
                 if file not in eval(musicContent):
                     musicCache.append(file)
+
+                    #暂不支持flac网易云格式
                     mp3 = eyed3.load(file)
                     i+=curRow
-                    self.tableWidget.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
-                    self.tableWidget.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
-                    self.tableWidget.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
-                    self.tableWidget.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
-                    self.tableWidget.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
-                    self.tableWidget.setItem(i, 5, QTableWidgetItem(file))
+                    self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
+                    self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
+                    self.musicTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
+                    self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
+                    self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
+                    self.musicTable.setItem(i, 5, QTableWidgetItem(file))
 
             f.write(str(musicCache+eval(musicContent)))
             if self.fileDialog.selectedFiles()!=[]:
@@ -82,15 +87,15 @@ class MusicWindow(QWidget, Ui_MusicWindow):
             musicContent=cache.read()
 
             if musicContent !="[]" and musicContent!='':
-                self.tableWidget.setRowCount(len(eval(musicContent)))
+                self.musicTable.setRowCount(len(eval(musicContent)))
                 for i, file in enumerate(eval(musicContent)):
                     mp3 = eyed3.load(file)
-                    self.tableWidget.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
-                    self.tableWidget.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
-                    self.tableWidget.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
-                    self.tableWidget.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
-                    self.tableWidget.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
-                    self.tableWidget.setItem(i, 5, QTableWidgetItem(file))
+                    self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
+                    self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
+                    self.musicTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
+                    self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
+                    self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
+                    self.musicTable.setItem(i, 5, QTableWidgetItem(file))
                 self.label_2.setText('共{}首'.format(len(eval(musicContent))))
                 return
             else:
@@ -155,6 +160,7 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.temp = 0
         self.tempOpac=0
         self.end=0
+
         self.tempColor = random.randint(0,255)
         self.toolBarWidth=self.toolBar.size().width()
         self.styleTimer.timeout.connect(self.styleChange)
@@ -182,12 +188,14 @@ height:40px;
             else:
                 self.end=1
                 self.tempColor= random.randint(0,255)
+
         else:
             if int(self.temp)>0:
                 self.temp -= self.toolBarWidth/100
             else:
                 self.end=0
                 self.tempColor = random.randint(0, 255)
+
         indexProportion=self.temp/self.toolBarWidth
 
         self.toolBar.setStyleSheet("""
@@ -197,7 +205,7 @@ height:40px;
         background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, {}), stop:{} rgba(255, 0, 0, {}),stop:1 rgba(255, 0, 0, {}));
         """.format(indexProportion,indexProportion,indexProportion,indexProportion))
         self.musicWindow.setStyleSheet("""
-        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, 0), stop:{} rgba(255, 0, 0, 50),stop:1 rgba(255, 0, 0, 50));
+        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:{}, stop:0 rgba(255, 255, 255, 0), stop:{} rgba(255, 0, 0, 50),stop:1 rgba(255, 0, 0, 50));
         """.format(indexProportion,indexProportion,indexProportion,indexProportion))
 
 

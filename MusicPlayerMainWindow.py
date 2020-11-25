@@ -12,7 +12,7 @@ class Ui_MusicPlayerMainWindow(object):
     def setupUi(self, MusicPlayerMainWindow):
         MusicPlayerMainWindow.setObjectName("MusicPlayerMainWindow")
         MusicPlayerMainWindow.setWindowModality(QtCore.Qt.NonModal)
-        MusicPlayerMainWindow.resize(810, 553)
+        MusicPlayerMainWindow.resize(810, 563)
         MusicPlayerMainWindow.setWindowOpacity(1.0)
         MusicPlayerMainWindow.setDocumentMode(False)
         MusicPlayerMainWindow.setUnifiedTitleAndToolBarOnMac(False)
