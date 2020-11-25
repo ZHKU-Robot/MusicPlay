@@ -20,7 +20,6 @@ import os
 class MusicTable(QWidget, Ui_MusicTable):
     def __init__(self, *args, **kwargs):
         super(MusicTable, self).__init__(*args, **kwargs)
-        print(self.parent().parent())
 
 class MusicWindow(QWidget, Ui_MusicWindow):
     def __init__(self, *args, **kwargs):
@@ -28,7 +27,6 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.setupUi(self)
         self.attrInit()
     def attrInit(self,):
-
         self.musicTable=MusicTable(parent=self)
         self.musicTable.setupUi(self.musicTable)
         self.tableWidget=self.musicTable.tableWidget
@@ -37,7 +35,11 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.fileDialog.finished.connect(self.musicReloaded)
         self.fileDialog.setModal(1)
         self.fileDialog.setViewMode(QFileDialog.Detail)
+        #是因为此Widget的父控件上又添加了其他Widget，覆盖在了按钮上，因此无法点击。
+        self.pushButton.raise_()
+        self.pushButton_2.raise_()
         self.pushButton_2.clicked.connect(self.fileDialog.show)
+
 
         self.musicBindInit()
         self.musicLoaded()
@@ -108,7 +110,7 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.toolButtonInit()
     def musicWindowInit(self):
         self.musicWindow=MusicWindow(parent=self)
-        self.musicWindow.setParent(self)
+
         self.mainBodyLayout.addWidget(self.musicWindow)
 
     def switchFace(self,index):
