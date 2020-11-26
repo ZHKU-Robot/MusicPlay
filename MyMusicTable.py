@@ -36,8 +36,12 @@ class MyMusicTable(QTableWidget):
     def mouseDoubleClickEvent(self, e) -> None:
         if self.lastRow!=-1:
             self.songPath = self.item(self.lastRow, self.columnCount() - 1).text()
+            #将当前曲目加入历史列表中
+
             self.mainWindow.musicMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.songPath)))
+
             self.mainWindow.musicMediaPlayer.play()
+
             #加载歌词
             self.mainWindow.musicWindow.lyricsWindowInit(self.songPath)
             if self.mainWindow.musicMediaPlayer.state()==1:

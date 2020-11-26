@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>810</width>
-    <height>563</height>
+    <height>621</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,37 +26,162 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,1">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
+     <layout class="QHBoxLayout" name="mainBodyLayout">
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
       <item>
-       <layout class="QHBoxLayout" name="mainBodyLayout"/>
+       <widget class="QWidget" name="playListWindow" native="true">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+border:2px solid #ffffff;
+border-radius:20%;
+</string>
+             </property>
+             <property name="text">
+              <string>历史记录</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>10</pointsize>
+               <italic>false</italic>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 0, 127);</string>
+             </property>
+             <property name="text">
+              <string>总2首</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>清空</string>
+             </property>
+             <property name="icon">
+              <iconset resource="res.qrc">
+               <normaloff>:/buttonicon/MusicButtonIcon/icon_clean.svg</normaloff>:/buttonicon/MusicButtonIcon/icon_clean.svg</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="MyMusicTable" name="musiclistTable">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+           <property name="gridStyle">
+            <enum>Qt::DashDotDotLine</enum>
+           </property>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>歌名</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>歌手</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>专辑</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>时长</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>大小</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>路径</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>
     <item>
      <widget class="QWidget" name="widget_3" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>63</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>63</height>
+       </size>
+      </property>
       <property name="palette">
        <palette>
         <active>
@@ -431,7 +556,7 @@ margin: 0px;</string>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btnclock">
+        <widget class="QPushButton" name="btnHistory">
          <property name="minimumSize">
           <size>
            <width>30</width>
@@ -517,6 +642,13 @@ margin: 0px;</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyMusicTable</class>
+   <extends>QTableWidget</extends>
+   <header>MyMusicTable</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="res.qrc"/>
  </resources>

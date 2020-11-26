@@ -8,14 +8,10 @@ from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QTableWidgetItem, QTableView, QTableWidget, \
-    QAbstractItemView
+    QAbstractItemView, QSplitter
 from qtpy import QtMultimedia, QtCore, QtWidgets
-
-from MusicTable import Ui_MusicTable
 from musicWindow import Ui_MusicWindow
 from MusicPlayerMainWindow import Ui_MusicPlayerMainWindow
-
-from songwordsWindow import Ui_songwordsWindow
 import os
 
 
@@ -27,7 +23,14 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.setupUi(self)
         self.attrInit()
     def attrInit(self,):
-
+        self.musicWinSplitter=QSplitter(self)
+        self.horizontalLayout_2.setStretch(4,2)
+        # self.musicWinSplitter.setOrientation(Qt.Vertical)
+        # self.lyricsWindow.setParent(self.musicWinSplitter)
+        # self.musicTable.setParent(self.musicWinSplitter)
+        self.musicWinSplitter.addWidget(self.lyricsWindow)
+        self.musicWinSplitter.addWidget(self.musicTable)
+        self.horizontalLayout_2.addWidget(self.musicWinSplitter)
         self.fileDialog=QFileDialog(self,'选择你的音乐..','.',"music (*.mp3 *.wav *.flac)")
 
         self.fileDialog.finished.connect(self.musicReloaded)
@@ -40,18 +43,18 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         self.musicLoaded()
     def getMusicPaths(self):
         self.musicPaths=list(self.fileDialog.getOpenFileNames(self, '选择你的音乐..', '.', "music (*.mp3 *.wav *.flac)"))[:-1][0]
-        print(self.musicPaths)
         self.musicReloaded()
     def lyricsWindowInit(self,songPath):
-        s=eyed3.load(songPath)
-        ly=s.tag.lyrics
-        print(dir(ly))
-        print(ly)
-        for l in dir(ly):
-            try:
-                eval('ly.'+l)()
-            except Exception as e:
-                print(e)
+        pass
+        # s=eyed3.load(songPath)
+        # ly=s.tag.lyrics
+        # print(dir(ly))
+        # print(ly)
+        # for l in dir(ly):
+        #     try:
+        #         eval('ly.'+l)()
+        #     except Exception as e:
+        #         print(e)
         #获取歌词
 
     def musicReloaded(self):
@@ -88,11 +91,15 @@ class MusicWindow(QWidget, Ui_MusicWindow):
             with open('musicContent.cache','w+') as cache:
                 cache.write('[]')
 
+
         with open('musicContent.cache',encoding='utf8') as cache:
             musicContent=cache.read()
+            #将本地列表加入到历史列表中,因为只有一个播放列表,现在是默认的
 
             if musicContent !="[]" and musicContent!='':
+                self.parent().historyTable = eval(musicContent)
                 self.musicTable.setRowCount(len(eval(musicContent)))
+                self.parent().musiclistTable.setRowCount(len(eval(musicContent)))
                 for i, file in enumerate(eval(musicContent)):
                     mp3 = eyed3.load(file)
                     self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
@@ -101,6 +108,15 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                     self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
                     self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
                     self.musicTable.setItem(i, 5, QTableWidgetItem(file))
+
+                    self.parent().musiclistTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
+                    self.parent().musiclistTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
+                    self.parent().musiclistTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
+                    self.parent().musiclistTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
+                    self.parent().musiclistTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
+                    self.parent().musiclistTable.setItem(i, 5, QTableWidgetItem(file))
+
+                self.parent().label.setText('共{}首'.format(len(eval(musicContent))))
                 self.label_2.setText('共{}首'.format(len(eval(musicContent))))
                 return
             else:
@@ -120,8 +136,8 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.toolButtonInit()
     def musicWindowInit(self):
         self.musicWindow=MusicWindow(parent=self)
-
-        self.mainBodyLayout.addWidget(self.musicWindow)
+        # self.verticalLayout_2.setStretch(1,3)
+        self.mainBodyLayout.insertWidget(0,self.musicWindow)
 
     def switchFace(self,index):
         if index == 0:
@@ -136,8 +152,16 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
     def toolButtonInit(self):
         self.actionPlayList.triggered.connect(lambda :self.switchFace(0))
         self.actionBtnMV.triggered.connect(lambda :self.switchFace(1))
+
     def attrInit(self):
+        self.playListWindow.setVisible(0)
         self.face={0:self.musicWindow,1:self.videoWidget}
+        #history..
+        self.histroyTable=[]
+        #现在播放的列表
+        self.curTable=[]
+
+
 
     def myPlayerChanged(self):
         #如果等于1 即正在播放
@@ -155,11 +179,12 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.videoMediaPlayer = QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.videoMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'mv/mv.mp4')))
         self.videoWidget = QVideoWidget()
-        self.mainBodyLayout.addWidget(self.videoWidget)
+        self.mainBodyLayout.insertWidget(0,self.videoWidget)
         self.videoWidget.setVisible(0)
         self.videoMediaPlayer.setVideoOutput(self.videoWidget)
         #音频按钮绑定
         self.btnstar.clicked.connect(self.myPlayerChanged)
+        self.btnHistory.clicked.connect(lambda :self.playListWindow.setVisible(0 if self.playListWindow.isVisible() else 1))
     def qSliderInit(self):
         self.styleTimer=QTimer()
         self.temp = 0
