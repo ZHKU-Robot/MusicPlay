@@ -1,5 +1,5 @@
 # yjc播放器版本  有bug请赶紧提交issue!!!
-## 可以下载main.exe玩半成品  
+## 可以下载main.exe玩半成品  在dist目录下
 
 ## requirement
 若是想视频解码成功得需要这个
