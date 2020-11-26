@@ -3,12 +3,12 @@ import sys
 import time
 import random
 import eyed3
-from PyQt5.QtCore import QTimer, QUrl, Qt
+from PyQt5.QtCore import QTimer, QUrl, Qt, QPoint, QAbstractItemModel
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer, QMediaPlaylist
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QFileDialog, QTableWidgetItem, QTableView, QTableWidget, \
-    QAbstractItemView, QSplitter
+    QAbstractItemView, QSplitter, QComboBox, QDialog, QMessageBox
 from qtpy import QtMultimedia, QtCore, QtWidgets
 from musicWindow import Ui_MusicWindow
 from MusicPlayerMainWindow import Ui_MusicPlayerMainWindow
@@ -72,10 +72,10 @@ class MusicWindow(QWidget, Ui_MusicWindow):
             for i, file in enumerate(self.musicPaths):
                 if file not in eval(musicContent):
                     musicCache.append(file)
-                    print(file)
                     #暂不支持flac网易云格式
                     mp3 = eyed3.load(file)
                     i+=curRow
+
                     self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
                     self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
                     self.musicTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
@@ -129,12 +129,21 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
-        self.qSliderInit()
-        self.qMediaPlayerInit()
+        self.qSliderSytleChange()
         self.musicWindowInit()
+        self.qMediaPlayerInit()
+
+        self.playModeInit()
         self.attrInit()
         self.toolButtonInit()
+
+    def musicHistoryRemove(self):
+        for i in range(self.musiclistTable.rowCount(),-1,-1):
+            self.musiclistTable.removeRow(i)
+        self.historyTable=[]
+        self.label.setText("共0首")
     def musicWindowInit(self):
+        self.historyTable=list()
         self.musicWindow=MusicWindow(parent=self)
         # self.verticalLayout_2.setStretch(1,3)
         self.mainBodyLayout.insertWidget(0,self.musicWindow)
@@ -152,30 +161,65 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
     def toolButtonInit(self):
         self.actionPlayList.triggered.connect(lambda :self.switchFace(0))
         self.actionBtnMV.triggered.connect(lambda :self.switchFace(1))
+    def playModeChoice(self):
+        self.mode+=1
+        self.pushButton_3.setIcon(self.modeIconDict[self.mode])
+        self.pushButton_3.setToolTip({1:'列表循环',2:'单曲循环',3:"随机播放"}[self.mode])
+        self.musicPlayList.setPlaybackMode(self.modePlay[self.mode])
+        if self.mode%len(self.modeIconDict)==0:
+            self.mode=0
 
+
+
+    def playModeInit(self):
+        self.mode=1
+        self.modeIconDict={1:QIcon(":/buttonicon/MusicButtonIcon/listcircle.svg"), 2:QIcon(":/buttonicon/MusicButtonIcon/singlecircle.svg")
+                            ,3:QIcon(":/buttonicon/MusicButtonIcon/randomplay.svg")}
+        self.modePlay={1:QMediaPlaylist .Loop,2:QMediaPlaylist .CurrentItemInLoop,3:QMediaPlaylist .Random}
+
+        self.pushButton_3.clicked.connect(self.playModeChoice)
     def attrInit(self):
         self.playListWindow.setVisible(0)
+        #播放列表的索引
+        self.playListIndex=0
+        #现在播放的音乐
+        self.curMusic=''
         self.face={0:self.musicWindow,1:self.videoWidget}
-        #history..
-        self.histroyTable=[]
-        #现在播放的列表
-        self.curTable=[]
-
-
-
+        #history..按键初始化
+        self.pushButton_2.clicked.connect( self.musicHistoryRemove)
     def myPlayerChanged(self):
         #如果等于1 即正在播放
         if self.musicMediaPlayer.state()==1:
             self.musicMediaPlayer.pause()
             self.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/_pause .svg"))
-
         else:
-            #记录上一次听过的音乐并播放
+            #这里意味着 直接点击播放键,没有进行任何处理默认从历史记录开始
+            if self.curMusic=='':
+                self.musicPlayList.setCurrentIndex(1)
+                self.musicMediaPlayer.setPlaylist(self.musicPlayList)
+                self.curMusic=self.musicPlayList.currentMedia().canonicalUrl().path()[1:]
+                #记录上一次听过的音乐并播放s
+
             self.musicMediaPlayer.play()
+
             self.btnstar.setIcon(QIcon(":/buttonicon/MusicButtonIcon/pause.svg"))
+    def qSliderChange(self):
+        self.horizontalSlider.setValue(self.musicMediaPlayer.position())
+        self.label_2.setText("{}".format(round(self.musicMediaPlayer.position()/1000/60,2)))
     def qMediaPlayerInit(self):
         # 音频流播放器初始化
-        self.musicMediaPlayer=QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.musicMediaPlayer=QtMultimedia.QMediaPlayer(None)
+        self.musicMediaPlayer.durationChanged.connect(self.qSilderInit)
+        self.musicMediaPlayer.positionChanged.connect(self.qSliderChange)
+        self.musicPlayList=QMediaPlaylist()
+
+        for url in self.historyTable:
+            self.musicPlayList.addMedia(QMediaContent(QUrl.fromLocalFile(url)))
+        self.musicPlayList.setCurrentIndex(0)
+        #最后一个项目播放完毕后，将从第一个项目重新开始播放。
+        self.musicPlayList.setPlaybackMode(QMediaPlaylist.Loop)
+        self.musicMediaPlayer.setPlaylist(self.musicPlayList)
+
         self.videoMediaPlayer = QtMultimedia.QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.videoMediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(r'mv/mv.mp4')))
         self.videoWidget = QVideoWidget()
@@ -185,7 +229,12 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         #音频按钮绑定
         self.btnstar.clicked.connect(self.myPlayerChanged)
         self.btnHistory.clicked.connect(lambda :self.playListWindow.setVisible(0 if self.playListWindow.isVisible() else 1))
-    def qSliderInit(self):
+    def qSilderInit(self):
+        musicSize=self.musicMediaPlayer.duration()
+        self.horizontalSlider.setMaximum(musicSize)
+        self.label_3.setText("{}".format(round(musicSize/1000/60,2)))
+        self.horizontalSlider.sliderMoved.connect(lambda :self.musicMediaPlayer.setPosition(self.horizontalSlider.value()))
+    def qSliderSytleChange(self):
         self.styleTimer=QTimer()
         self.temp = 0
         self.tempOpac=0
@@ -229,14 +278,14 @@ height:40px;
         indexProportion=self.temp/self.toolBarWidth
 
         self.toolBar.setStyleSheet("""
-        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, {}), stop:{} rgba(255, 0, 0,{}),stop:1 rgba(255, 0, 0,{}));
-        """.format(indexProportion,indexProportion,indexProportion,indexProportion))
+        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(	255,105,180, {}), stop:{} rgba(	255,182,193,{}),stop:1 rgba(	255,182,193,{}));
+        """.format(1-indexProportion,1-indexProportion,indexProportion,indexProportion))
         self.widget_3.setStyleSheet("""
-        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 255, 255, {}), stop:{} rgba(255, 0, 0, {}),stop:1 rgba(255, 0, 0, {}));
-        """.format(indexProportion,indexProportion,indexProportion,indexProportion))
-        self.musicWindow.setStyleSheet("""
-        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:{}, stop:0 rgba(255, 255, 255, 0), stop:{} rgba(255, 0, 0, 50),stop:1 rgba(255, 0, 0, 50));
-        """.format(indexProportion,indexProportion,indexProportion,indexProportion))
+        background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255,182,193, {}), stop:{} rgba(	255,182,193, {}),stop:1 rgba(	255,182,193, {}));
+        """.format(1-indexProportion,1-indexProportion,indexProportion,indexProportion))
+        # self.musicWindow.setStyleSheet("""
+        # background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:{}, stop:0 rgba(255, 255, 255, 0), stop:{} rgba(255, 0, 0, 50),stop:1 rgba(255, 0, 0, 50));
+        # """.format(indexProportion,indexProportion,indexProportion,indexProportion))
 
 
     def closeEvent(self, a0) -> None:
@@ -249,7 +298,7 @@ if __name__ == '__main__':  # 程序的入口
     win = MainWindow()
     win.setWindowTitle('No Tension')
 
-    win.setGeometry(111,222,1000,600)
+    win.setGeometry(333,333,1000,600)
     # win.setWindowFlags(Qt.CustomizeWindowHint)
     win.show()
     sys.exit(app.exec_())
