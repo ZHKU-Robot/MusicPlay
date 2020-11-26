@@ -1,5 +1,6 @@
 # yjc版本
-## 可以下载main.exe玩半成品  注意 播放器的目录一定不要变!
+## 可以下载main.exe玩半成品  
+
 ## requirement
 若是想视频解码成功得需要这个
 - [https://files.1f0.de/lavf/LAVFilters-0.73.1.exe](https://files.1f0.de/lavf/LAVFilters-0.73.1.exe)
