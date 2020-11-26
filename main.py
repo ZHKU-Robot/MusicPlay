@@ -94,13 +94,21 @@ class MusicWindow(QWidget, Ui_MusicWindow):
 
         with open('musicContent.cache',encoding='utf8') as cache:
             musicContent=cache.read()
+
             #将本地列表加入到历史列表中,因为只有一个播放列表,现在是默认的
 
             if musicContent !="[]" and musicContent!='':
-                self.parent().historyTable = eval(musicContent)
-                self.musicTable.setRowCount(len(eval(musicContent)))
-                self.parent().musiclistTable.setRowCount(len(eval(musicContent)))
-                for i, file in enumerate(eval(musicContent)):
+                musicContentList = eval(musicContent)
+                for i, file in enumerate(musicContentList.copy()):
+                    if not os.path.exists(file):
+                        musicContentList.remove(file)
+
+
+
+                self.parent().historyTable = musicContentList.copy()
+                self.musicTable.setRowCount(len(musicContentList))
+                self.parent().musiclistTable.setRowCount(len(musicContentList))
+                for i, file in enumerate(musicContentList):
                     mp3 = eyed3.load(file)
                     self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
                     self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))

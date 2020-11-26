@@ -6,7 +6,9 @@
 - [https://files.1f0.de/lavf/LAVFilters-0.73.1.exe](https://files.1f0.de/lavf/LAVFilters-0.73.1.exe)
 
 ## Update
-
+- 2020年11月26日23:40:46
+    - 紧急修复一下路径不存在报错的问题
+        - 由于一开始加载播放历史的问题,现在加上去了
 - 2020年11月26日23:00:42 
     - 更新进度条,可用
         - 使用musicMediaPlayer的信号durationChanged 以及 positionChanged搞定
