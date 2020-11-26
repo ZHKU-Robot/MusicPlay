@@ -1,4 +1,4 @@
-# yjc版本
+# yjc播放器版本  有bug请赶紧提交issue!!!
 ## 可以下载main.exe玩半成品  
 
 ## requirement
@@ -6,9 +6,13 @@
 - [https://files.1f0.de/lavf/LAVFilters-0.73.1.exe](https://files.1f0.de/lavf/LAVFilters-0.73.1.exe)
 
 ## Update
+- 2020年11月27日00:15:22
+    - 紧急修复修复 musicContent.cache的一个bug
+    - 现在食用应该没问题了
 - 2020年11月26日23:40:46
     - 紧急修复一下路径不存在报错的问题
         - 由于一开始加载播放历史的问题,现在加上去了
+    - 现在musicContent.cache里还未取出
 - 2020年11月26日23:00:42 
     - 更新进度条,可用
         - 使用musicMediaPlayer的信号durationChanged 以及 positionChanged搞定

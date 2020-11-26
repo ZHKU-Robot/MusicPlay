@@ -63,6 +63,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         musicCache = []
         count=0
         curRow=self.musicTable.rowCount()
+        print(self.musicPaths)
         for i, file in enumerate(self.musicPaths):
             if file not in eval(musicContent):
                 count+=1
@@ -72,6 +73,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
             for i, file in enumerate(self.musicPaths):
                 if file not in eval(musicContent):
                     musicCache.append(file)
+                    self.musicContentList.append(file)
                     #暂不支持flac网易云格式
                     mp3 = eyed3.load(file)
                     i+=curRow
@@ -88,49 +90,47 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                 self.label_2.setText('共{}首'.format(len(musicCache+eval(musicContent))))
     def musicLoaded(self):
         if not os.path.exists('musicContent.cache'):
-            with open('musicContent.cache','w+') as cache:
+            with open('musicContent.cache','w+',encoding='utf8') as cache:
                 cache.write('[]')
+            return
+        else:
+            with open('musicContent.cache','r+',encoding='utf8') as cache:
+                musicContent = cache.read()
+                #将本地列表加入到历史列表中,因为只有一个播放列表,现在是默认的
+
+                if musicContent !="[]" and musicContent!='':
+                    self.musicContentList = eval(musicContent)
+                    for i, file in enumerate(self.musicContentList.copy()):
+                        if not os.path.exists(file):
+                            self.musicContentList.remove(file)
+
+                    self.parent().historyTable = self.musicContentList.copy()
+                    self.musicTable.setRowCount(len(self.musicContentList))
+                    self.parent().musiclistTable.setRowCount(len(self.musicContentList))
+                    for i, file in enumerate(self.musicContentList):
+                        mp3 = eyed3.load(file)
+                        self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
+                        self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
+                        self.musicTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
+                        self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
+                        self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
+                        self.musicTable.setItem(i, 5, QTableWidgetItem(file))
+
+                        self.parent().musiclistTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
+                        self.parent().musiclistTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
+                        self.parent().musiclistTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
+                        self.parent().musiclistTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
+                        self.parent().musiclistTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
+                        self.parent().musiclistTable.setItem(i, 5, QTableWidgetItem(file))
+
+                    self.parent().label.setText('共{}首'.format(len(eval(musicContent))))
+                    self.label_2.setText('共{}首'.format(len(eval(musicContent))))
+                    return
+                else:
+                    self.musicContentList=[]
+                    cache.write('[]')
 
 
-        with open('musicContent.cache',encoding='utf8') as cache:
-            musicContent=cache.read()
-
-            #将本地列表加入到历史列表中,因为只有一个播放列表,现在是默认的
-
-            if musicContent !="[]" and musicContent!='':
-                musicContentList = eval(musicContent)
-                for i, file in enumerate(musicContentList.copy()):
-                    if not os.path.exists(file):
-                        musicContentList.remove(file)
-
-
-
-                self.parent().historyTable = musicContentList.copy()
-                self.musicTable.setRowCount(len(musicContentList))
-                self.parent().musiclistTable.setRowCount(len(musicContentList))
-                for i, file in enumerate(musicContentList):
-                    mp3 = eyed3.load(file)
-                    self.musicTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
-                    self.musicTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
-                    self.musicTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
-                    self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
-                    self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
-                    self.musicTable.setItem(i, 5, QTableWidgetItem(file))
-
-                    self.parent().musiclistTable.setItem(i, 0, QTableWidgetItem(mp3.tag.title if mp3.tag.title !=None else file.split('/')[-1]))
-                    self.parent().musiclistTable.setItem(i,1, QTableWidgetItem(mp3.tag.artist if mp3.tag.artist!=None else "未知艺术家"))
-                    self.parent().musiclistTable.setItem(i, 2, QTableWidgetItem(mp3.tag.album if mp3.tag.album!=None else "未知专辑"))
-                    self.parent().musiclistTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
-                    self.parent().musiclistTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
-                    self.parent().musiclistTable.setItem(i, 5, QTableWidgetItem(file))
-
-                self.parent().label.setText('共{}首'.format(len(eval(musicContent))))
-                self.label_2.setText('共{}首'.format(len(eval(musicContent))))
-                return
-            else:
-                pass
-        with open('musicContent.cache', 'w+') as cache:
-            cache.write('[]')
 
 
 class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
@@ -297,6 +297,9 @@ height:40px;
 
 
     def closeEvent(self, a0) -> None:
+        with open('musicContent.cache','w+',encoding='utf8')as f:
+            f.write(str(self.musicWindow.musicContentList))
+
         for i in range(100,0,-1):
             self.setWindowOpacity(i/100)
             time.sleep(0.002)
