@@ -40,6 +40,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         # self.pushButton.raise_()
         # self.pushButton_2.raise_()
         self.pushButton_2.clicked.connect(self.getMusicPaths)
+        self.musicContentList = []
         self.musicLoaded()
     def getMusicPaths(self):
         self.musicPaths=list(self.fileDialog.getOpenFileNames(self, '选择你的音乐..', '.', "music (*.mp3 *.wav *.flac)"))[:-1][0]
@@ -127,7 +128,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                     self.label_2.setText('共{}首'.format(len(eval(musicContent))))
                     return
                 else:
-                    self.musicContentList=[]
+
                     cache.write('[]')
 
 
