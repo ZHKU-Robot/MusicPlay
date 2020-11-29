@@ -1,11 +1,23 @@
 # yjc播放器版本  有bug请赶紧提交issue!!!
-## 可以下载main.exe玩半成品  在dist目录下
+## 已经release
 
 ## requirement
 若是想视频解码成功得需要这个
 - [https://files.1f0.de/lavf/LAVFilters-0.73.1.exe](https://files.1f0.de/lavf/LAVFilters-0.73.1.exe)
 
 ## Update
+
+
+
+- 2020年11月29日19:14:36
+    - 最后发一个release吧..
+- 2020年11月29日19:12:14
+    - 实现音量键控制
+    - 上一首下一首
+    - 播放列表和历史播放列表独立
+    - **可能是最后一次更新了**
+    - 其实这首歌挺有感觉的
+    - ![1606648454835](img/1606648454835.png)
 - 2020年11月27日00:15:22
     - 紧急修复修复 musicContent.cache的一个bug
     - 现在食用应该没问题了
@@ -20,7 +32,6 @@
         - 使用 `self.horizontalSlider.sliderMoved.connect(lambda :self.musicMediaPlayer.setPosition(self.horizontalSlider.value()))`实现
     - 实现了单曲循环,随机播放,列表循环等
         - 使用QMediaPlaylist实现
-
 - 2020年11月26日20:29:55
     - 支持历史记录记载 绑定清空按钮
     - 调整了一下动效,好看了一点
@@ -32,9 +43,9 @@
 
 - UI待优化
 - 差歌词
-- 上一首下一首按钮
-- 音量键
 - 历史记录仍可独立出来为history优化,不过暂时没必要
+
+![1606648316964](img/1606648316964.png)
 
 ![1606403048507](img/1606403048507.png)
 

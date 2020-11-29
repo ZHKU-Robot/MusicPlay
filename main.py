@@ -22,6 +22,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         super(MusicWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.attrInit()
+        self.musicLoaded()
     def attrInit(self,):
         self.musicWinSplitter=QSplitter(self)
         self.horizontalLayout_2.setStretch(4,2)
@@ -41,7 +42,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
         # self.pushButton_2.raise_()
         self.pushButton_2.clicked.connect(self.getMusicPaths)
         self.musicContentList = []
-        self.musicLoaded()
+
     def getMusicPaths(self):
         self.musicPaths=list(self.fileDialog.getOpenFileNames(self, '选择你的音乐..', '.', "music (*.mp3 *.wav *.flac)"))[:-1][0]
         self.musicReloaded()
@@ -85,6 +86,7 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                     self.musicTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
                     self.musicTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
                     self.musicTable.setItem(i, 5, QTableWidgetItem(file))
+                    self.parent().musicPlayList.addMedia(QMediaContent(QUrl.fromLocalFile(file)))
 
             f.write(str(musicCache+eval(musicContent)))
             if self.fileDialog.selectedFiles()!=[]:
@@ -123,9 +125,12 @@ class MusicWindow(QWidget, Ui_MusicWindow):
                         self.parent().musiclistTable.setItem(i, 3, QTableWidgetItem(str(mp3.info.time_secs / 60)[:4] + 'min'))
                         self.parent().musiclistTable.setItem(i, 4,QTableWidgetItem(str(mp3.info.size_bytes / 1024 / 1024)[:5] + 'M'))
                         self.parent().musiclistTable.setItem(i, 5, QTableWidgetItem(file))
+                        self.parent().musicHistoryList.addMedia(QMediaContent(QUrl.fromLocalFile(file)))
+
 
                     self.parent().label.setText('共{}首'.format(len(eval(musicContent))))
                     self.label_2.setText('共{}首'.format(len(eval(musicContent))))
+                    self.parent().musicMediaPlayer.setPlaylist(self.parent().musicHistoryList)
                     return
                 else:
 
@@ -139,24 +144,48 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.qSliderSytleChange()
+        self.attrInit()
+        self.musicMediaPlayer=QtMultimedia.QMediaPlayer(None)
         self.musicWindowInit()
         self.qMediaPlayerInit()
-
         self.playModeInit()
-        self.attrInit()
+        self.volumeBarInit()
         self.toolButtonInit()
+    def volumeBarMoved(self):
+        self.musicMediaPlayer.setVolume(self.horizontalSlider_2.value())
+        if self.horizontalSlider_2.value()==0:
+            if self.btnvolum!=self.volume0:
+                self.btnvolum.setIcon(self.volume0)
+        elif self.horizontalSlider_2.value()>0 and self.horizontalSlider_2.value()<50:
+            if self.btnvolum!=self.volume50:
+                self.btnvolum.setIcon(self.volume50)
+        else:
+            if self.btnvolum!=self.volume100:
+                self.btnvolum.setIcon(self.volume100)
+    def volumeBarInit(self):
+        self.horizontalSlider_2.setMaximum(100)
 
+        self.volume0=QIcon(":/buttonicon/MusicButtonIcon/volume-off.svg")
+        self.volume50=QIcon(":/buttonicon/MusicButtonIcon/volume-half.svg")
+        self.volume100=QIcon(':/buttonicon/MusicButtonIcon/volume-full.svg')
+
+
+        self.horizontalSlider_2.sliderMoved.connect(self.volumeBarMoved)
+        self.horizontalSlider_2.setValue(60)
     def musicHistoryRemove(self):
         for i in range(self.musiclistTable.rowCount(),-1,-1):
             self.musiclistTable.removeRow(i)
         self.historyTable=[]
+        self.musicHistoryList.removeMedia(0,self.musicHistoryList.mediaCount())
         self.label.setText("共0首")
     def musicWindowInit(self):
-        self.historyTable=list()
+
+        self.musicHistoryList=QMediaPlaylist()
         self.musicWindow=MusicWindow(parent=self)
         # self.verticalLayout_2.setStretch(1,3)
         self.mainBodyLayout.insertWidget(0,self.musicWindow)
-
+        #history..按键初始化
+        self.pushButton_2.clicked.connect( self.musicHistoryRemove)
     def switchFace(self,index):
         if index == 0:
             self.videoMediaPlayer.pause()
@@ -188,14 +217,17 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
 
         self.pushButton_3.clicked.connect(self.playModeChoice)
     def attrInit(self):
+
+        self.historyTable=list()
         self.playListWindow.setVisible(0)
         #播放列表的索引
         self.playListIndex=0
         #现在播放的音乐
         self.curMusic=''
-        self.face={0:self.musicWindow,1:self.videoWidget}
-        #history..按键初始化
-        self.pushButton_2.clicked.connect( self.musicHistoryRemove)
+
+        self.musicPlayList=QMediaPlaylist()
+        self.curList=self.musicPlayList
+
     def myPlayerChanged(self):
         #如果等于1 即正在播放
         if self.musicMediaPlayer.state()==1:
@@ -205,7 +237,7 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
             #这里意味着 直接点击播放键,没有进行任何处理默认从历史记录开始
             if self.curMusic=='':
                 self.musicPlayList.setCurrentIndex(1)
-                self.musicMediaPlayer.setPlaylist(self.musicPlayList)
+                self.musicMediaPlayer.setPlaylist(self.musicHistoryList)
                 self.curMusic=self.musicPlayList.currentMedia().canonicalUrl().path()[1:]
                 #记录上一次听过的音乐并播放s
 
@@ -216,11 +248,13 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         self.horizontalSlider.setValue(self.musicMediaPlayer.position())
         self.label_2.setText("{}".format(round(self.musicMediaPlayer.position()/1000/60,2)))
     def qMediaPlayerInit(self):
+
         # 音频流播放器初始化
-        self.musicMediaPlayer=QtMultimedia.QMediaPlayer(None)
+
         self.musicMediaPlayer.durationChanged.connect(self.qSilderInit)
         self.musicMediaPlayer.positionChanged.connect(self.qSliderChange)
-        self.musicPlayList=QMediaPlaylist()
+
+
 
         for url in self.historyTable:
             self.musicPlayList.addMedia(QMediaContent(QUrl.fromLocalFile(url)))
@@ -238,6 +272,10 @@ class MainWindow(QMainWindow, Ui_MusicPlayerMainWindow):
         #音频按钮绑定
         self.btnstar.clicked.connect(self.myPlayerChanged)
         self.btnHistory.clicked.connect(lambda :self.playListWindow.setVisible(0 if self.playListWindow.isVisible() else 1))
+        self.btnnext.clicked.connect(self.curList.next)
+        self.btnlast.clicked.connect(self.curList.previous)
+        self.musicWindow.pushButton.clicked.connect(self.musicMediaPlayer.play)
+        self.face={0:self.musicWindow,1:self.videoWidget}
     def qSilderInit(self):
         musicSize=self.musicMediaPlayer.duration()
         self.horizontalSlider.setMaximum(musicSize)
@@ -309,7 +347,7 @@ if __name__ == '__main__':  # 程序的入口
     app = QApplication(sys.argv)
     win = MainWindow()
     win.setWindowTitle('No Tension')
-
+    win.setWindowIcon(QIcon(':/buttonicon/MusicButtonIcon/robot.svg'))
     win.setGeometry(333,333,1000,600)
     # win.setWindowFlags(Qt.CustomizeWindowHint)
     win.show()
